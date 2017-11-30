@@ -35,9 +35,13 @@ void WorkerThread::join() {
 
 void doWork(int runCount, Semaphore* s, Bookkeeper* bk) {
 	for (int j = 0; j < 32; ++j){
+		//Wait for the semaphore to be available.
+		//    This lets the scheduler kick off this function.
 		s->wait();
-		bk->done = false;
+		bk->done = false; //Tell the bookkeeper that the function has started.
 		for (int run = 0; run < runCount; ++run) {
+
+			//This is the actual function that does work.
 			int** arr = new int*[10];
 
 			for (int row = 0; row < 10; ++row) {
@@ -56,6 +60,6 @@ void doWork(int runCount, Semaphore* s, Bookkeeper* bk) {
 				}
 			}
 		} 
-		bk->done = true;
+		bk->done = true; //Tell the bookkeeper that the function has finished.
 	}
 }
