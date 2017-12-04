@@ -2,7 +2,7 @@
 
 Scheduler::Scheduler() {
 	threads.push_back(new WorkerThread(1));
-	threads.push_back(new WorkerThread(2));
+	threads.push_back(new WorkerThread(2000000));
 	threads.push_back(new WorkerThread(4));
 	threads.push_back(new WorkerThread(16));
 }
@@ -51,7 +51,7 @@ void Scheduler::join() {
 
 void schedule(vector<WorkerThread*> threads, Semaphore* s) {
 	int scheduleTime = -1;
-	for (int i = 0; i < 32; ++i) {
+	for (int i = 0; i < 160; ++i) {
 		scheduleTime++;
 		//Wait for the timer to kick off the scheduler.
 		s->wait();
@@ -59,7 +59,7 @@ void schedule(vector<WorkerThread*> threads, Semaphore* s) {
 		//If t_0 hasn't finished (it's bookkeeper hasn't marked "done" yet),
 		//    and it's not the first run, then there's an overrun.
 		if (!threads[0]->bk->done && scheduleTime != 0) {
-				cout << "Overrun 0" << endl;
+				threads[0]->bk->overruns++;
 		}
 		//Kick off t_0.
 		threads[0]->s->signal();
@@ -67,7 +67,7 @@ void schedule(vector<WorkerThread*> threads, Semaphore* s) {
 		//Every 2 units of time, perform the same logic but with t_1.
 		if (scheduleTime % 2 == 0) {
 			if (!threads[1]->bk->done && scheduleTime != 0) {
-				cout << "Overrun 1" << endl;
+				threads[1]->bk->overruns++;
 			}
 
 			threads[1]->s->signal();
@@ -75,7 +75,7 @@ void schedule(vector<WorkerThread*> threads, Semaphore* s) {
 
 		if (scheduleTime % 4 == 0) {
 			if (!threads[2]->bk->done && scheduleTime != 0) {
-				cout << "Overrun 2" << endl;
+				threads[2]->bk->overruns++;
 			}
 
 			threads[2]->s->signal();
@@ -83,7 +83,7 @@ void schedule(vector<WorkerThread*> threads, Semaphore* s) {
 
 		if (scheduleTime % 16 == 0) {
 			if (!threads[3]->bk->done && scheduleTime != 0) {
-				cout << "Overrun 3" << endl;
+				threads[3]->bk->overruns++;
 			}
 
 			threads[3]->s->signal();

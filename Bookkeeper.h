@@ -10,6 +10,8 @@ class Bookkeeper {
 		Bookkeeper();
 		~Bookkeeper();
 		bool done;
+		int overruns;
+		int runCount;
 	private:
 };
 
